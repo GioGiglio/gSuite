@@ -87,11 +87,24 @@ class Date:
         )
     
     @staticmethod
-    def fromGDate(gDate):
-        # parses a date in the RFC3339's format to date object
-        date, time = gDate.split('T')
+    def fromGString(s):
+        # parses a date in the RFC3339's format "yyyy-mm-ddThh:mm:ss[+-]tz:tz" to date object
+        date, time = s.split('T')
         year,month,day = date.split('-')
         hour,minute = time.split(':')[:2]
         timezone = 'UTC' if time[-1] == 'Z' or time.endswith('+00:00') else time[-6:]
 
         return Date(day,month,year,hour,minute,timezone)
+
+    @staticmethod
+    def fromString(s):
+        # parses a date in the standard format "dd/mm/yyyy hh:mm" to a date object
+        date,time = s.split(' ')
+        day,month,year = date.split('/')
+        hour,minute = time.split(':')
+        return Date(day,month,year,hour,minute,None)
+
+    @staticmethod
+    def fromUserInput(s):
+        day,month,year,hour,minute = s.split(' ')
+        return Date(day,month,year,hour,minute,None)
