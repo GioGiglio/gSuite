@@ -3,14 +3,15 @@ import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+from datetime import date, timedelta
 from reqs import SCOPES
 
 creds = None
 
 def toGDate(d):
     # converts date the the RFC3339 format
-    # input:  dd/mm/yyyy hh:mm
-    # output: yyyy-mm-ddThh:mm:ss- ...
+    # input:  "dd/mm/yyyy hh:mm"
+    # output: "yyyy-mm-ddThh:mm:ss[+-]tz:tz"
     # a timeZone field will also be added
     date,time = d.split(' ')
     day,month,year = date.split('/')
@@ -21,16 +22,30 @@ def toGDate(d):
 
 def toDate(gd):
     # converts date from RFC3339's format to local format
-    # input:  yyyy-mm-ddThh:mm:ss[+-]tz:tz ...
-    # output: dd/mm/yyyy hh:mm
+    # input:  "yyyy-mm-ddThh:mm:ss[+-]tz:tz"
+    # output: "dd/mm/yyyy hh:mm"
     date, time = gd['dateTime'].split('T')
     year,month,day = date.split('-')
-    hour,minute = time[:5].split(':')
+    hour,minute = time.split(':')[:2]
     
     timezone = 'UTC' if time[-1] == 'Z' or time.endswith('+00:00') else time[-6:]
     return day + '/' + month + '/' + year + ' ' + hour + ':' + minute
 
-def readCreds():
+def joinDate(d):
+    # input "15 03 2019 14 00"
+    # output "15/03/2019 14:00"
+    d = d.split(' ')
+    return '/'.join(d[:3]) + ' ' + ':'.join(d[-2:])
+
+def todayDate():
+    # output: 03 09 2019
+    return date.today().strftime('%d %m %Y')
+
+def tomorrowDate():
+    # output: 04 09 2019
+    return (date.today() + timedelta(days=1)).strftime('%d %m %Y')
+
+def loadCreds():
     global creds
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -49,3 +64,34 @@ def readCreds():
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
+
+class Date:
+    '''Utility date class'''
+    def __init__(self,day,month,year,hour,minute,timezone):
+        self.day = day
+        self.month = month
+        self.year = year
+        self.hour = hour
+        self.minute = minute
+        self.timezone = timezone
+
+    def toGdate(self):
+        # output: "yyyy-mm-ddThh:mm:ss[+-]tz:tz"
+        return '{}-{}-{}T{}:{}:00{}'.format(
+            self.year, self.month, self.day, self.hour, self.minute, self.timezone
+        )
+
+    def __str__(self):
+        return '{}/{}/{} {}:{}'.format(
+            self.day, self.month, self.year, self.hour, self.minute
+        )
+    
+    @staticmethod
+    def fromGDate(gDate):
+        # parses a date in the RFC3339's format to date object
+        date, time = gDate.split('T')
+        year,month,day = date.split('-')
+        hour,minute = time.split(':')[:2]
+        timezone = 'UTC' if time[-1] == 'Z' or time.endswith('+00:00') else time[-6:]
+
+        return Date(day,month,year,hour,minute,timezone)

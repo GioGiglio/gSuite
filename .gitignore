@@ -1,3 +1,5 @@
 credentials.json
 token.pickle
 *.txt
+__pycache__/
+.vscode/
