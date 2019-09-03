@@ -1,6 +1,5 @@
 import datetime
 import utils
-#from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
@@ -12,6 +11,8 @@ def init():
     
 
 def insertEvent(event):
+    event.start = {'dateTime': utils.Date.toRFC3339(event.start)}
+    event.end = {'dateTime': utils.Date.toRFC3339(event.end)}
     event = service.events().insert(calendarId='primary', body=event.__dict__).execute()
 
 def listEvents(timeMin = 0, maxResults = 10):
