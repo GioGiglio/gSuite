@@ -39,10 +39,12 @@ class Date:
         self.timezone = timezone
 
     def toRFC3339(self):
-        # output: "yyyy-mm-ddThh:mm:ss[+-]tz:tz"
-        return '{}-{}-{}T{}:{}:00{}'.format(
-            self.year, self.month, self.day, self.hour, self.minute, self.timezone
-        )
+        # output: "yyyy-mm-dd[Thh:mm:ss+-tz:tz]"
+        out =  '{}-{}-{}'.format( self.year, self.month, self.day)
+
+        if self.hour:
+            out += 'T{}:{}:00{}'.format(self.hour, self.minute, self.timezone)
+        return out
 
     def __str__(self):
         out = '{}/{}/{}'.format(self.day, self.month, self.year)
@@ -90,20 +92,34 @@ class Date:
         # check wildcards 'today' and 'tomorrow'
         if s.startswith('today'):
             year, month, day = date.today().timetuple()[:3]
-            hour, minute = s.split(' ')[1:]
+            # check if s contains also time
+            if ' ' in s:
+                hour, minute = s.split(' ')[1:]
         elif s.startswith('tomorrow'):
             year, month, day = (date.today() + timedelta(days=1)).timetuple()[:3]
-            hour, minute = s.split(' ')[1:]
+            # check if s contains also time
+            if ' ' in s:
+                hour, minute = s.split(' ')[1:]
         else:
             # no wildcards
-            day,month,year,hour,minute = s.split(' ')
+            d = s.split(' ')
+            day,month,year = d[:3]
+            if len(d) > 3:
+                hour,minute = d[3:5]
 
         # check if date is valid
         try:
-            d = '{} {} {} {} {}'.format(day,month,year,hour,minute)
-            datetime.strptime(d, '%d %m %Y %H %M')
+            # validate date
+            d = '{} {} {}'.format(day,month,year)
+            datetime.strptime(d, '%d %m %Y')
+            # validate time, if it exists
+            if 'hour' in locals():
+                d = '{} {}'.format(hour,minute)
+                datetime.strptime(d,'%H %M')
+                return Date(day,month,year,hour,minute,'+02:00')
+            else:
+                return Date(day,month,year,None,None,None)
+
         except ValueError:
             raise Exception('Date format is not valid')
-        else:
-            return Date(day,month,year,hour,minute,'+02:00')
         

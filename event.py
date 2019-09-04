@@ -43,7 +43,7 @@ class Event:
         correct = False
         name = input('Name: ')
         while not correct:
-            start = input('Start: ')    # 15 03 2019 14 00
+            start = input('Start: ')    # 15 03 2019[ 14 00]
             try:
                 start = Date.fromUserInput(start)
             except:
