@@ -17,7 +17,7 @@ reqs.init()
 events = reqs.listEvents()
 with open('list.txt','w') as file:
     for e in events:
-        print(Event.parse(e).__dict__)
+        print(Event.parse(e))
         for k,v in e.items():
             file.write(str(k) + ' ' + str(v) + '\n')
 

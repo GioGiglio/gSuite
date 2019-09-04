@@ -45,14 +45,17 @@ class Date:
         )
 
     def __str__(self):
-        return '{}/{}/{} {}:{}'.format(
-            self.day, self.month, self.year, self.hour, self.minute
-        )
+        out = '{}/{}/{}'.format(self.day, self.month, self.year)
+        if self.hour:
+            out += ' {}:{}'.format(self.hour,self.minute)
+        return out
+
     
-    def __repr__(self):
-        return str({
-            'dateTime': self.toRFC3339()
-        })
+    #def __repr__(self):
+    #    key = 'date' if self.start.hour == None else 'dateTime'
+    #    return str({
+    #        'dateTime': self.toRFC3339()
+    #    })
 
     @staticmethod
     def fromRFC3339(s):
@@ -64,7 +67,7 @@ class Date:
             hour,minute = time.split(':')[:2]
             return Date(day,month,year,hour,minute,None)
         else:
-            #  s contains date only
+            # s contains date only
             year,month,day = s.split('-')
             return Date(day,month,year,None,None,None)
         

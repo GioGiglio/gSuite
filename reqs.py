@@ -11,9 +11,7 @@ def init():
     
 
 def insertEvent(event):
-    event.start = {'dateTime': utils.Date.toRFC3339(event.start)}
-    event.end = {'dateTime': utils.Date.toRFC3339(event.end)}
-    event = service.events().insert(calendarId='primary', body=event.__dict__).execute()
+    event = service.events().insert(calendarId='primary', body=event.toDict()).execute()
 
 def listEvents(timeMin = 0, maxResults = 10):
     if timeMin == 0:
