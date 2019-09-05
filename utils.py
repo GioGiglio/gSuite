@@ -1,40 +1,12 @@
-import os.path
-import pickle
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
 from datetime import date, timedelta, datetime
 from reqs import SCOPES
 import json
 
-creds = None
-calendars = None
-
-def loadCreds():
-    global creds
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
-
 def loadCalendars():
-    global calendars
     # read calendars
     with open('calendars.json','r') as f:
         calendars = json.load(f)
+    return calendars
 
 class Date:
     '''Utility date class'''
@@ -45,18 +17,19 @@ class Date:
         self.hour = hour
         self.minute = minute
         self.timezone = timezone
+        self.hasTime = hour != None
 
     def toRFC3339(self):
         # output: "yyyy-mm-dd[Thh:mm:ss+-tz:tz]"
         out =  '{}-{}-{}'.format( self.year, self.month, self.day)
 
-        if self.hour:
+        if self.hasTime:
             out += 'T{}:{}:00{}'.format(self.hour, self.minute, self.timezone)
         return out
 
     def __str__(self):
         out = '{}/{}/{}'.format(self.day, self.month, self.year)
-        if self.hour:
+        if self.hasTime:
             out += ' {}:{}'.format(self.hour,self.minute)
         return out
 
@@ -64,10 +37,11 @@ class Date:
         return '{}/{}/{}'.format(self.day, self.month, self.year)
 
     def getTime(self):
-        return '{}:{}'.format(self.hour,self.minute) if self.hour != None else ''
+        return '{}:{}'.format(self.hour,self.minute) if self.hasTime else None
 
+    def dateEquals(self,d):
+        return self.day == d.day and self.month == d.month and self.year == d.year
 
-    
     #def __repr__(self):
     #    key = 'date' if self.start.hour == None else 'dateTime'
     #    return str({

@@ -1,7 +1,6 @@
 import utils
 from utils import Date
 
-
 class Event:
     '''The event object'''
     def __init__(self,summary,description, start, end, location, extra):
@@ -12,9 +11,9 @@ class Event:
         self.end = end
         
         # event type
-        if self.start.hour == None:
+        if not self.start.hasTime:
             self.type = 'allday'
-        elif self.start.day == self.end.day and self.start.month == self.end.month and self.start.year == self.end.year:
+        elif self.start.dateEquals(self.end):
             self.type = 'singleday'
         else:
             self.type = 'multiday'
