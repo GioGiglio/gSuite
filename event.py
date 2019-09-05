@@ -10,6 +10,14 @@ class Event:
         self.description = description
         self.start = start
         self.end = end
+        
+        # event type
+        if self.start.hour == None:
+            self.type = 'allday'
+        elif self.start.day == self.end.day and self.start.month == self.end.month and self.start.year == self.end.year:
+            self.type = 'singleday'
+        else:
+            self.type = 'multiday'
 
         if extra:
             # unpack extra
@@ -18,7 +26,21 @@ class Event:
 
     
     def __str__(self):
-        return 'Summary: {} \nDescription: {} \nLocation: {} \nFrom: {} to {}'.format(self.summary, self.description, self.location, str(self.start), str(self.end))
+        out = self.summary + '\n'
+        if self.type == 'singleday':
+            out += self.start.getDate() + ' * ' + self.start.getTime() + " - " + self.end.getTime() + '\n'
+        elif self.type == 'allday':
+            out += self.start.getDate() + '\n'
+        else:   # multidate
+            out += self.start.getDate() + ', ' + self.start.getTime() + " - " + self.end.getDate() + ', ' + self.end.getTime() + '\n'
+        
+        if self.location != None:
+            out += self.location + '\n'
+        
+        if self.description != None:
+            out += self.description + '\n'
+        
+        return out
 
     def toDict(self):
         out = vars(self)
@@ -26,7 +48,8 @@ class Event:
         key = 'date' if self.start.hour == None else 'dateTime'
         out['start'] = {key: utils.Date.toRFC3339(self.start)}
         out['end'] = {key: utils.Date.toRFC3339(self.end)}
-        print(out)
+        # delete type property
+        del(out['type'])
         return out
 
     @staticmethod

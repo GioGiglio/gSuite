@@ -5,8 +5,10 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from datetime import date, timedelta, datetime
 from reqs import SCOPES
+import json
 
 creds = None
+calendars = None
 
 def loadCreds():
     global creds
@@ -27,6 +29,12 @@ def loadCreds():
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
+
+def loadCalendars():
+    global calendars
+    # read calendars
+    with open('calendars.json','r') as f:
+        calendars = json.load(f)
 
 class Date:
     '''Utility date class'''
@@ -51,6 +59,13 @@ class Date:
         if self.hour:
             out += ' {}:{}'.format(self.hour,self.minute)
         return out
+
+    def getDate(self):
+        return '{}/{}/{}'.format(self.day, self.month, self.year)
+
+    def getTime(self):
+        return '{}:{}'.format(self.hour,self.minute) if self.hour != None else ''
+
 
     
     #def __repr__(self):

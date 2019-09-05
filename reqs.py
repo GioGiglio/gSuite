@@ -3,6 +3,7 @@ import utils
 from googleapiclient.discovery import build
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+CALENDAR_IDS = ''
 service = None
 
 def init():
@@ -10,8 +11,8 @@ def init():
     service = build('calendar', 'v3', credentials=utils.creds)
     
 
-def insertEvent(event):
-    event = service.events().insert(calendarId='primary', body=event.toDict()).execute()
+def insertEvent(event,calendarId):
+    event = service.events().insert(calendarId=calendarId, body=event.toDict()).execute()
 
 def listEvents(timeMin = 0, maxResults = 10):
     if timeMin == 0:
