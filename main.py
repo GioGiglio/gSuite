@@ -19,6 +19,14 @@ def main():
     elif flags.list:
         listEvents(calendar)
 
+    elif flags.schedule:
+        showSchedule(calendar)
+
+    else:
+        # no main flag provided
+        #TODO implement a menu
+        print('not implemented')
+
 
 def parseArgs():
     parser = argparse.ArgumentParser(prog='gcal',
@@ -26,6 +34,7 @@ def parseArgs():
     parser.add_argument('-n','--new-event', dest='new_event', action='store_true')
     parser.add_argument('-c','--calendar', dest='calendar', action='store')
     parser.add_argument('-l','--list', dest='list', action='store_true')
+    parser.add_argument('-s','--schedule', dest='schedule', action='store_true')
     #print(parser.parse_args(['-c','primary']))
 
     return parser.parse_args()
@@ -46,6 +55,15 @@ def listEvents(calendarId):
         calendarId = 'primary'
 
     events = reqs.listEvents(calendarId)
+    for e in events:
+        print(Event.parse(e))
+
+def showSchedule(calendarId):
+    if not calendarId:
+        calendarId = 'primary'
+
+    events = reqs.schedule(calendarId)
+    
     for e in events:
         print(Event.parse(e))
 
