@@ -25,19 +25,22 @@ class Event:
 
     
     def __str__(self):
-        out = self.summary + '\n'
+        out = self.summary + ' '
+
+        if self.description:
+            out += '[' + self.description + ']\n'
+
         if self.type == 'singleday':
-            out += self.start.getDate() + ' * ' + self.start.getTime() + " - " + self.end.getTime() + '\n'
+            out += self.start.getDate() + ' * ' + self.start.getTime() + "-" + self.end.getTime()
         elif self.type == 'allday':
-            out += self.start.getDate() + '\n'
+            out += self.start.getDate()
         else:   # multidate
-            out += self.start.getDate() + ', ' + self.start.getTime() + " - " + self.end.getDate() + ', ' + self.end.getTime() + '\n'
+            out += self.start.getDate() + ', ' + self.start.getTime() + "-" + self.end.getDate() + ', ' + self.end.getTime()
         
-        if self.location != None:
-            out += self.location + '\n'
-        
-        if self.description != None:
-            out += self.description + '\n'
+        if self.location:
+            out += ' [' + self.location + ']\n'
+        else:
+            out += '\n'
         
         return out
 
@@ -56,8 +59,8 @@ class Event:
         key = 'date' if 'date' in e['start'] else 'dateTime'
         start = Date.fromRFC3339(e['start'][key])
         end = Date.fromRFC3339(e['end'][key])
-        description = '' if 'description' not in e else e['description']
-        location = '' if 'location' not in e else e['location']
+        description = None if 'description' not in e else e['description']
+        location = None if 'location' not in e else e['location']
         return Event(e['summary'],description,start,end,location,None)
 
     @staticmethod

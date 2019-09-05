@@ -7,7 +7,6 @@ from googleapiclient.discovery import build
 
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.events']
-CALENDAR_IDS = ''
 service = None
 creds = None
 
@@ -42,11 +41,11 @@ def loadCreds():
 def insertEvent(event,calendarId):
     event = service.events().insert(calendarId=calendarId, body=event).execute()
 
-def listEvents(calendarId='primary', timeMin = 0, maxResults = 10):
+def listEvents(calendarId, timeMin = 0, maxResults = 10):
     if timeMin == 0:
         timeMin = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
-    events_result = service.events().list(calendarId='primary', timeMin=timeMin,
+    events_result = service.events().list(calendarId=calendarId, timeMin=timeMin,
                                           maxResults=maxResults, singleEvents=True,
                                           orderBy='startTime').execute()
     return events_result.get('items', [])

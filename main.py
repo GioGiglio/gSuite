@@ -24,7 +24,7 @@ def parseArgs():
     parser = argparse.ArgumentParser(prog='gcal',
         description='Google Calendar CL client')
     parser.add_argument('-n','--new-event', dest='new_event', action='store_true')
-    parser.add_argument('-c','--calendar', dest='calendar', nargs=1, action='store')
+    parser.add_argument('-c','--calendar', dest='calendar', action='store')
     parser.add_argument('-l','--list', dest='list', action='store_true')
     #print(parser.parse_args(['-c','primary']))
 
@@ -41,9 +41,13 @@ def newEvent(calendars, calendarId):
     reqs.insertEvent(event.toDict(),calendarId)
 
 def listEvents(calendarId):
+
+    if not calendarId:
+        calendarId = 'primary'
+
     events = reqs.listEvents(calendarId)
     for e in events:
-        print(Event.parse(e), '\n')
+        print(Event.parse(e))
 
 def readCalendarId(calendars):
     print('Calendar (', end='')
