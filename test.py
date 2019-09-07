@@ -1,41 +1,18 @@
-from event import Event
-import utils
-import reqs
+import rrule
 
-reqs.init()
-
-calendars = utils.loadCalendars()
-
-e = Event.readEvent()
-options = []
-for i,v in enumerate(calendars):
-    options.append('{}: {}'.format(i,v))
-
-print('Calendar (', end='')
-print(*options, sep=', ', end='')
-print('): ', end='')
-i = input()
-
-
-#for i,v in enumerate(calsendars):
-#    print('{}: {}'.format(i,v))
-
-
-#reqs.insertEvent(e,)
-#print(vars(e))
-#print(e.__dict__)
-
-
-#x = Event('Gerry Scotti','sample description','07/10/2019 9:30','07/10/2019 11:30','Università degli studi di Firenze',None)
-#print(x)
-
-#events = reqs.listEvents()
-#with open('list.txt','w') as file:
-#    for e in events:
-#        print(Event.parse(e))
-#        for k,v in e.items():
-#            file.write(str(k) + ' ' + str(v) + '\n')
-
-#for e in events:
-#    print(Event.parse(e))
-#    print('\n')
+r = rrule.fromUserInput('20 days')
+print(r)
+r = rrule.toStr(r)
+print(r)
+r = rrule.fromUserInput('1 weeks on mon,thu')
+print(r)
+r = rrule.toStr(r)
+print(r)
+r = rrule.fromUserInput('3 days for 15 times')
+print(r)
+r = rrule.toStr(r)
+print(r)
+r = rrule.fromUserInput('2 weeks on fri until 31 12 2019')
+print(r)
+r = rrule.toStr(r)
+print(r)

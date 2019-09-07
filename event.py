@@ -1,6 +1,7 @@
 import utils
-from utils import Date
-from datetime import datetime
+import rrule
+from date import Date
+from datetime import datetime, timedelta
 
 class Event:
     '''The event object'''
@@ -33,11 +34,11 @@ class Event:
             out += '[' + self.description + ']\n'
 
         if self.type == 'singleday':
-            out += self.start.getDate() + ' * ' + self.start.getTime() + "-" + self.end.getTime()
+            out += self.start.dateStr() + ' * ' + self.start.timeStr() + "-" + self.end.timeStr()
         elif self.type == 'allday':
-            out += self.start.getDate()
+            out += self.start.dateStr()
         else:   # multidate
-            out += self.start.getDate() + ', ' + self.start.getTime() + "-" + self.end.getDate() + ', ' + self.end.getTime()
+            out += str(self.start) + " - " + str(self.end)
         
         if self.location:
             out += ' [' + self.location + ']\n'
@@ -45,81 +46,42 @@ class Event:
             out += '\n'
 
         if self.extra:
-            out += '[' + self.recurrence() + ']\n'
+            #TODO self.extra['recurrence'] has to be a string not a list
+            out += '[' + rrule.toStr(self.extra['recurrence']) + ']\n'
         
         return out
 
     def toDict(self):
         out = vars(self)
         # set key according to type of date: all day or not
-        key = 'date' if self.start.hour == None else 'dateTime'
-        out['start'] = {key: utils.Date.toRFC3339(self.start)}
-        out['end'] = {key: utils.Date.toRFC3339(self.end)}
+        key = 'dateTime' if self.start.hasTime else 'date'
+        out['start'] = {key: self.start.isoformat()}
+        out['end'] = {key: self.end.isoformat()}
+
         # delete unnecessary properties
         del(out['type'])
         del(out['extra'])
         return out
 
-    def recurrence(self):
-        tokens = self.extra['recurrence']
-        count = None
-        interval = None
-        until = None
-        byday = None
-        out = ''
-
-        for t in tokens:
-            k,v = t.split('=')
-            if k =='RRULE:FREQ':
-                freq = v
-                if freq == 'DAILY':
-                    freq = 'days'
-                elif freq == 'WEEKLY':
-                        freq = 'weeks'
-                elif freq == 'MONTHLY':
-                    freq = 'months'
-                else:
-                    freq = 'years'
-
-            elif k == 'WKST':
-                continue
-            elif k == 'COUNT':
-                count = v
-            elif k == 'INTERVAL':
-                interval = v
-            elif k == 'UNTIL':
-                until = v
-                until = datetime.strptime(v,'%Y%m%dT%H%M%SZ').strftime('%d/%m/%Y')
-            elif k == 'BYDAY':
-                byday = v
-        
-        if not interval:
-            interval = 1
-
-        out += 'every {} {}'.format(interval,freq)
-
-        if byday:
-            out += ' on {}'.format(byday)
-
-        if count:
-            out += ' for {} times'.format(count)
-        elif until:
-            out += ' until {}'.format(until)
-
-        return out
-
     @staticmethod
     def parse(e):
-        key = 'date' if 'date' in e['start'] else 'dateTime'
-        start = Date.fromRFC3339(e['start'][key])
-        end = Date.fromRFC3339(e['end'][key])
+        hasTime = 'dateTime' in e['start']
+        key = 'dateTime' if hasTime else 'date'
+        start = Date.fromDatetime(datetime.fromisoformat(e['start'][key]), hasTime)
+        end = Date.fromDatetime(datetime.fromisoformat(e['end'][key]), hasTime)
         description = None if 'description' not in e else e['description']
         location = None if 'location' not in e else e['location']
         extra = None
         if 'recurrence' in e:
-            extra = {'recurrence': e['recurrence'][0].split(';')}
+            extra = {'recurrence': e['recurrence'][0]}
         
         return Event(e['summary'],description,start,end,location,extra)
+
+    @staticmethod
+    def quick(summary,dateStart):
+        # creates an event with only a summary and a duration of 1 hour
+        dateEnd = Date.fromDatetime(dateStart + timedelta(hours=1), hasTime=True)
+        return Event(summary,None,dateStart,dateEnd,None,None)
 
     @staticmethod
     def readEvent():
@@ -129,8 +91,8 @@ class Event:
             start = input('Start: ')    # 15 03 2019[ 14 00]
             try:
                 start = Date.fromUserInput(start)
-            except:
-                print('Invalid date format')
+            except Exception as e:
+                print(e)
             else:
                 correct = True
 
@@ -139,8 +101,8 @@ class Event:
             end = input('End: ')
             try:
                 end = Date.fromUserInput(end)
-            except:
-                print('Invalid date format')
+            except Exception as e:
+                print(e)
             else:
                 correct = True
          

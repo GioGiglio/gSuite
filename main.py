@@ -2,6 +2,7 @@ from event import Event
 import argparse
 import utils
 import reqs
+from date import Date
 
 def main():
     reqs.init()
@@ -19,8 +20,11 @@ def main():
     elif flags.list:
         listEvents(calendar)
 
-    elif flags.schedule:
-        showSchedule(calendar)
+    elif flags.agenda:
+        showAgenda(calendar)
+    
+    elif flags.quick:
+        quickEvent(calendar, flags.quick)
 
     else:
         # no main flag provided
@@ -34,9 +38,8 @@ def parseArgs():
     parser.add_argument('-n','--new-event', dest='new_event', action='store_true')
     parser.add_argument('-c','--calendar', dest='calendar', action='store')
     parser.add_argument('-l','--list', dest='list', action='store_true')
-    parser.add_argument('-s','--schedule', dest='schedule', action='store_true')
-    #print(parser.parse_args(['-c','primary']))
-
+    parser.add_argument('-a','--agenda', dest='agenda', action='store_true')
+    parser.add_argument('-q','--quick',dest='quick',action='store', nargs='*')
     return parser.parse_args()
 
 
@@ -49,6 +52,24 @@ def newEvent(calendars, calendarId):
     # insert event into calendar
     reqs.insertEvent(event.toDict(),calendarId)
 
+def quickEvent(calendarId, tokens):
+    # format date time event_summary
+    if not calendarId:
+        calendarId = 'primary'
+
+    if len(tokens) < 2:
+        raise Exception('invalid format')
+
+    s = ' '.join(tokens)
+    
+    date, summary = s.split(',', maxsplit=1)
+    date.strip()
+    summary.strip()
+    date = Date.fromUserInput(date)
+
+    e = Event.quick(summary,date)
+    reqs.insertEvent(e.toDict(), calendarId)
+
 def listEvents(calendarId):
 
     if not calendarId:
@@ -58,11 +79,11 @@ def listEvents(calendarId):
     for e in events:
         print(Event.parse(e))
 
-def showSchedule(calendarId):
+def showAgenda(calendarId):
     if not calendarId:
         calendarId = 'primary'
 
-    events = reqs.schedule(calendarId)
+    events = reqs.agenda(calendarId)
     
     for e in events:
         print(Event.parse(e))

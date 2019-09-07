@@ -50,7 +50,7 @@ def listEvents(calendarId, timeMin = 0, maxResults = 10):
                                           ).execute()
     return events_result.get('items', [])
 
-def schedule(calendarId, timeMin = 0, maxResults = 10):
+def agenda(calendarId, timeMin = 0, maxResults = 10):
     if timeMin == 0:
         timeMin = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
