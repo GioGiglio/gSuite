@@ -4,56 +4,56 @@ from datetime import datetime
 def toStr(s):
     # returns a human readable representation of the recurrence
     # "every 2 weeks on FR for 20 times"
-        tokens = s.split(';')
-        count = None
-        interval = None
-        until = None
-        byday = None
-        out = []
+    tokens = s.split(';')
+    count = None
+    interval = None
+    until = None
+    byday = None
+    out = []
 
-        weekdays = {'MO':'Mon', 'TU':'Tue', 'WE':'Wed', 'TH':'Thu', 'FR':'Fri', 'SA':'Sat', 'SU':'Sun'}
+    weekdays = {'MO':'Mon', 'TU':'Tue', 'WE':'Wed', 'TH':'Thu', 'FR':'Fri', 'SA':'Sat', 'SU':'Sun'}
 
-        for t in tokens:
-            k,v = t.split('=')
-            if k =='RRULE:FREQ':
-                freq = v
-                if freq == 'DAILY':
-                    freq = 'days'
-                elif freq == 'WEEKLY':
-                        freq = 'weeks'
-                elif freq == 'MONTHLY':
-                    freq = 'months'
-                else:
-                    freq = 'years'
+    for t in tokens:
+        k,v = t.split('=')
+        if k =='RRULE:FREQ':
+            freq = v
+            if freq == 'DAILY':
+                freq = 'days'
+            elif freq == 'WEEKLY':
+                freq = 'weeks'
+            elif freq == 'MONTHLY':
+                freq = 'months'
+            else:
+                freq = 'years'
 
-            elif k == 'WKST':
-                continue
-            elif k == 'COUNT':
-                count = v
-            elif k == 'INTERVAL':
-                interval = v
-            elif k == 'UNTIL':
-                until = v
-                until = datetime.strptime(v,'%Y%m%dT%H%M%SZ').strftime('%d/%m/%Y')
-            elif k == 'BYDAY':
-                byday = v
-        
-        if not interval:
-            interval = 1
+        elif k == 'WKST':
+            continue
+        elif k == 'COUNT':
+            count = v
+        elif k == 'INTERVAL':
+            interval = v
+        elif k == 'UNTIL':
+            until = v
+            until = datetime.strptime(v,'%Y%m%dT%H%M%SZ').strftime('%d/%m/%Y')
+        elif k == 'BYDAY':
+            byday = v
+    
+    if not interval:
+        interval = 1
 
-        out.append('every {} {}'.format(interval,freq))
+    out.append('every {} {}'.format(interval,freq))
 
-        if byday:
-            days = byday.split(',')
-            byday = ','.join(map(lambda x: weekdays[x],days))
-            out.append('on ' + byday)
+    if byday:
+        days = byday.split(',')
+        byday = ','.join(map(lambda x: weekdays[x],days))
+        out.append('on ' + byday)
 
-        if count:
-            out.append('for ' + count + ' times')
-        elif until:
-            out.append('until ' + until)
+    if count:
+        out.append('for ' + count + ' times')
+    elif until:
+        out.append('until ' + until)
 
-        return ' '.join(out)
+    return ' '.join(out)
 
 
 def _parseTokens(tokens):
@@ -96,9 +96,9 @@ def _parseTokens(tokens):
 
 def fromUserInput(s):
     # parses the user input for a recurrence into a string representing the recurrence itself
-    
+
     tokens = s.split(' ')
-    freqs = {'days': 'DAILY', 'weeks': 'WEEKLY', 'months': 'MONTLY', 'years': 'YEARLY'}
+    freqs = {'days': 'DAILY', 'weeks': 'WEEKLY', 'months': 'MONTHLY', 'years': 'YEARLY'}
     out = []
 
     if len(tokens) < 2:
