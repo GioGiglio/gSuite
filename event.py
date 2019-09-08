@@ -108,5 +108,17 @@ class Event:
          
         location = input('Location: ')
         description = input('Description: ')
+        input('Extra (y,n): ')
+        if _ == 'y':
+            recurrence = input('recurrence: every ')
+            correct = False
+            while not correct:
+                try:
+                    recurrence = rrule.fromUserInput(recurrence)
+                except Exception as e:
+                    print(e)
+                else:
+                    correct =  True
+                    
 
         return Event(name,description,start,end,location,None)
