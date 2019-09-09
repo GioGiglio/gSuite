@@ -21,7 +21,7 @@ def test_rrule():
 
 
 def test():
-    with(open('attendees.json')) as f:
+    with(open('emails.json')) as f:
         attendees = json.load(f)
 
     s = input('with: ')

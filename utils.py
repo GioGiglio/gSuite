@@ -1,5 +1,3 @@
-from datetime import date, timedelta, datetime
-from reqs import SCOPES
 import json
 import re
 
@@ -23,3 +21,9 @@ def toEmail(name):
         return name
     
     return emails[name]
+
+def parseAttendees(s):
+    names = s.split(' ')
+
+    emails = list(map(toEmail, names))
+    return emails

@@ -6,6 +6,7 @@ from date import Date
 
 def main():
     reqs.init()
+    utils.loadEmails()
 
     flags = parseArgs()
     calendars = utils.loadCalendars()
@@ -35,11 +36,11 @@ def main():
 def parseArgs():
     parser = argparse.ArgumentParser(prog='gcal',
         description='Google Calendar CL client')
-    parser.add_argument('-n','--new-event', dest='new_event', action='store_true')
-    parser.add_argument('-c','--calendar', dest='calendar', action='store')
-    parser.add_argument('-l','--list', dest='list', action='store_true')
-    parser.add_argument('-a','--agenda', dest='agenda', action='store_true')
-    parser.add_argument('-q','--quick',dest='quick',action='store', nargs='*')
+    parser.add_argument('-n','--new-event', dest='new_event', action='store_true', help='create a new event')
+    parser.add_argument('-c','--calendar', dest='calendar', action='store', help='select the calendar (default is primary calendar)')
+    parser.add_argument('-l','--list', dest='list', action='store_true', help='list events for the selected calendar')
+    parser.add_argument('-a','--agenda', dest='agenda', action='store_true', help='show agenda for the selected calendar')
+    parser.add_argument('-q','--quick',dest='quick',action='store', nargs='*', help='create an event quickly')
     return parser.parse_args()
 
 

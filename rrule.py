@@ -66,7 +66,7 @@ def _parseTokens(tokens):
 
     l = len(tokens) -1
 
-    i = 0
+    i = 1   # skip tokens[0] that is 'every'
     interval = tokens[i]
     i += 1
     freq = tokens[i]
@@ -101,7 +101,7 @@ def fromUserInput(s):
     freqs = {'days': 'DAILY', 'weeks': 'WEEKLY', 'months': 'MONTHLY', 'years': 'YEARLY'}
     out = []
 
-    if len(tokens) < 2:
+    if len(tokens) < 3:
         raise Exception('Invalid format')
 
     freq,interval,byday,count,until = _parseTokens(tokens)

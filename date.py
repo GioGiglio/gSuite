@@ -91,8 +91,15 @@ class Date(datetime):
             nextDate = Date.dateNextWeekday(dayNumber)
             year, month, day = nextDate.timetuple()[:3]
 
+        elif not dateTokens[0].isdigit():
+            # first token is neither a number nor a valid wildcard
+            raise Exception('Invalid token: ' + dateTokens[0])
+
         else:
             # no wildcards
+            if len(dateTokens) < 3:
+                raise Exception('Not enough tokens for a date')
+
             day,month,year = dateTokens[:3]
 
         if len(dateTokens) > timeStartIndex:

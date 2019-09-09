@@ -5,13 +5,14 @@ from datetime import datetime, timedelta
 
 class Event:
     '''The event object'''
-    def __init__(self,summary,description, start, end, location, extra):
+    def __init__(self,summary,description, start, end, location, recurrence, attendees):
         self.summary = summary
         self.location = location
         self.description = description
         self.start = start
         self.end = end
-        self.extra = extra
+        self.recurrence = recurrence
+        self.attendees = attendees
         
         # event type
         if not self.start.hasTime:
@@ -20,11 +21,6 @@ class Event:
             self.type = 'singleday'
         else:
             self.type = 'multiday'
-
-        if extra:
-            # unpack extra
-            # attendees, recurrence, reminders
-            'not implemented'
 
     
     def __str__(self):
@@ -45,9 +41,11 @@ class Event:
         else:
             out += '\n'
 
-        if self.extra:
-            #TODO self.extra['recurrence'] has to be a string not a list
-            out += '[' + rrule.toStr(self.extra['recurrence']) + ']\n'
+        if self.recurrence:
+            out += '[' + rrule.toStr(self.recurrence) + ']'
+
+        if self.attendees:
+            out += '[with {}]'.format(', '.join(self.attendees))
         
         return out
 
@@ -60,7 +58,17 @@ class Event:
 
         # delete unnecessary properties
         del(out['type'])
-        del(out['extra'])
+        if out['attendees']:
+            out['attendees'] = list(map(lambda x: {'email': x}, out['attendees']))
+        else:
+            del out['attendees']
+
+        if out['recurrence']:
+            # represent recurrence as an array
+            out['recurrence'] = [ out['recurrence'] ]
+        else:
+            del out['recurrence']
+        
         return out
 
     @staticmethod
@@ -71,17 +79,17 @@ class Event:
         end = Date.fromDatetime(datetime.fromisoformat(e['end'][key]), hasTime)
         description = None if 'description' not in e else e['description']
         location = None if 'location' not in e else e['location']
-        extra = None
-        if 'recurrence' in e:
-            extra = {'recurrence': e['recurrence'][0]}
         
-        return Event(e['summary'],description,start,end,location,extra)
+        recurrence = e['recurrence'][0] if 'recurrence' in e else None
+        attendees = list(map(lambda x: x['email'], e['attendees'])) if 'attendees' in e else None
+ 
+        return Event(e['summary'],description,start,end,location,recurrence, attendees)
 
     @staticmethod
     def quick(summary,dateStart):
         # creates an event with only a summary and a duration of 1 hour
         dateEnd = Date.fromDatetime(dateStart + timedelta(hours=1), hasTime=True)
-        return Event(summary,None,dateStart,dateEnd,None,None)
+        return Event(summary,None,dateStart,dateEnd,None,None,None)
 
     @staticmethod
     def readEvent():
@@ -108,17 +116,34 @@ class Event:
          
         location = input('Location: ')
         description = input('Description: ')
-        input('Extra (y,n): ')
-        if _ == 'y':
-            recurrence = input('recurrence: every ')
+
+        recurrence, attendees = None, None
+        if input('Recurrence, attendees? (y/n): ')  == 'y':
             correct = False
             while not correct:
                 try:
-                    recurrence = rrule.fromUserInput(recurrence)
+                    recurrence = input('recurrence: ')
+                    if recurrence == '':
+                        recurrence = None
+                    else:
+                        recurrence = rrule.fromUserInput(recurrence)
                 except Exception as e:
                     print(e)
                 else:
                     correct =  True
                     
+            correct = False
+            while not correct:
+                try:
+                    attendees = input('with: ')
+                    if attendees == '':
+                        attendees = None
+                    else:
+                        attendees = utils.parseAttendees(attendees)
 
-        return Event(name,description,start,end,location,None)
+                except KeyError as e:
+                    print('Invalid name: ' + str(e))
+                else:
+                    correct = True
+        
+        return Event(name,description,start,end,location,recurrence, attendees)
