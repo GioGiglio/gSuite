@@ -8,18 +8,18 @@ $ gcal -q 18 30 - grocery shopping
 -- event added
 ```
 - __Easyness__: It's so easy to define __dates__, __attendees__ or even complex fields like __recurrences__:
-	```
-	$ gcal -n
-	Name: Meeting
-	Start: next mon 16 00
-	End: next mon 18 30
-	Location: Office
-	Extra fields? (y/n): y
-	Description:
-	Recurrence: every 1 weeks for 3 times
-	With: john micheal william
-	-- event added
-	```
+```
+$ gcal -n
+Name: Meeting
+Start: next mon 16 00
+End: next mon 18 30
+Location: Office
+Extra fields? (y/n): y
+Description:
+Recurrence: every 1 weeks for 3 times
+With: john micheal william
+-- event added
+```
 	
 ### How a __date__ is defined:
 - `31 12 2019 13 35` represents the 31 December 2019 at 13:35.
