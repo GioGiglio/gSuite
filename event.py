@@ -1,6 +1,6 @@
 import utils
 import rrule
-from date import Date
+from date import Date, TZ
 from datetime import datetime, timedelta
 
 class Event:
@@ -53,8 +53,23 @@ class Event:
         out = vars(self)
         # set key according to type of date: all day or not
         key = 'dateTime' if self.start.hasTime else 'date'
-        out['start'] = {key: self.start.isoformat()}
-        out['end'] = {key: self.end.isoformat()}
+
+        startValue = self.start.isoformat()
+        endValue = self.end.isoformat()
+
+        if key == 'date':
+            # remove time from iso formatted values
+            startValue = startValue.split('T')[0]
+            endValue = endValue.split('T')[0]
+
+        out['start'] = {key: startValue}
+        out['end'] = {key: endValue}
+
+        # add timeZone to start,end if they contains time
+        if key == 'dateTime':
+            tz = {'timeZone': TZ.tzname()}
+            out['start'].update(tz)
+            out['end'].update(tz)
 
         # delete unnecessary properties
         del(out['type'])
@@ -115,10 +130,12 @@ class Event:
                 correct = True
          
         location = input('Location: ')
-        description = input('Description: ')
 
-        recurrence, attendees = None, None
-        if input('Recurrence, attendees? (y/n): ')  == 'y':
+        description, recurrence, attendees = None, None, None
+        if input('Extra fields? (y/n): ')  == 'y':
+            
+            description = input('Description: ')
+
             correct = False
             while not correct:
                 try:

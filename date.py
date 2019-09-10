@@ -2,6 +2,9 @@ from datetime import datetime, date, timedelta, tzinfo
 
 class TZ(tzinfo):
     def utcoffset(self, dt): return timedelta(minutes=+120)
+    
+    @staticmethod
+    def tzname(): return 'Europe/Rome'
 
     def dst(self,dt): return timedelta(0)
 
