@@ -4,7 +4,7 @@ A command line client for _Google Calendar_ intended for __fast__ events creatio
 ## Objectives
 - __Speed__: The process of events creation or listing is all about speed. Let's take a look at the creation of a _quick event_ :
 ```
-$ gcal -q 18 30 - grocery shopping
+$ gcal -q today 18 30, grocery shopping
 -- event added
 ```
 - __Easyness__: It's so easy to define __dates__, __attendees__ or even complex fields like __recurrences__:
@@ -16,7 +16,7 @@ End: next mon 18 30
 Location: Office
 Extra fields? (y/n): y
 Description:
-Recurrence: every 1 weeks for 3 times
+Recurrence: every 2 weeks for 3 times
 With: john micheal william
 -- event added
 ```
@@ -46,7 +46,7 @@ Examples:
 
 ### How an __attendee__ is defined:
 An attende is defined by both an __email address__ or a __name__.
-In order to use a names you should have the corresponding records in the `emails.json` file:
+In order to use names, the file `emails.json` should contain the matches between names and emails in the following form:
 ```
 {
 	"john": "john@example.com",
