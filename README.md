@@ -20,6 +20,27 @@ Recurrence: every 2 weeks for 3 times
 With: john micheal william
 -- event added
 ```
+
+### Usage
+- `-n` , `--new-event` to create a new event.
+- `-q` , `--quick` to create a new quick event.
+- `-c` , `--calendar` to select the calendar (default is primary).
+- `-l` , `--list` to list the events of the selected calendar.
+- `-a` , `--agenda` to show  the agenda for the selected calendar.
+- `-h` , `--help` to print an help message.
+
+### Calendars
+Multiple calendars can be associated to an account in addition to the main calendar whose id is  `primary`. <br>
+In order to perform operations over a specific calendar, its name should be specified using the `-c , --calendar` argument
+followed by the calendar name associated with its id. <br>
+The file `calendars.json` contains the matches between calendars names and ids.
+```
+{
+	"main": "primary",
+	"work": "****************@group.calendar.google.com",
+	"family": "****************@group.calendar.google.com"
+}
+```
 	
 ### How a __date__ is defined:
 - `31 12 2019 13 35` represents the 31 December 2019 at 13:35.
