@@ -1,10 +1,4 @@
 {
-    "gio" : "gio@gmail.com",
-    "fra" : "fra@gmail.com",
-    "friends": [
-        "friend1@gmail.com",
-        "friend2@gmail.com",
-        "friend3@gmail.com",
-        "friend4@gmail.com"
-    ]
+    "gio" : "gio@example.com",
+    "fra" : "fra@example.com"
 }

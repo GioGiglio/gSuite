@@ -48,7 +48,7 @@ def newEvent(calendars, calendarId):
     event = Event.readEvent()
 
     if not calendarId:
-        calendarId = readCalendarId(calendars)
+        calendarId = 'primary'
     
     # insert event into calendar
     reqs.insertEvent(event.toDict(),calendarId)

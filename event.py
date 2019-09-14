@@ -45,7 +45,8 @@ class Event:
             out += '[' + rrule.toStr(self.recurrence) + ']\n'
 
         elif self.attendees:
-            out += '[with: {}] \n'.format(', '.join(self.attendees))
+            names = list(map(lambda x: utils.nameFromEmail(x), self.attendees))
+            out += '[with: {}] \n'.format(', '.join(names))
         
         return out
 
