@@ -51,19 +51,21 @@ The file `calendars.json` contains the matches between calendars names and ids.
 
 ### How a __recurrence__ is defined:
 The pattern to follow is : <br>
-`every INTERVAL FREQUENCY [on WEEKDAY WEEKDAY ...] for COUNT times | until DATE`
+`every INTERVAL FREQUENCY [on WEEKDAY,WEEKDAY,...] for COUNT times | until DATE`
 - `INTERVAL`:  an interger between 1 and 99
 - `FREQUENCY`: one of `days`,  `weeks`, `months`, `years`
 - `WEEKDAY`: one of `mon`, `tue`, `wed`, `thu`, `fri`, `sat`, `sun`.
 - `COUNT`: an integer between 1 and 99
 - `DATE`: the ending date. See how a date is defined for more info.
 
-__Note__: `for` and `until` cannot be used togheter.
+__Notes__:
+- Multiple weekdays must be separated by a comma `,` with no spaces.
+- `for` and `until` cannot be used togheter.
 	
-Examples:
+__Examples__:
 - every 3 weeks
 - every 20 days for 5 times
-- every 2 weeks on mon fri until 31 12 2019
+- every 2 weeks on mon,fri until 31 12 2019
 
 ### How an __attendee__ is defined:
 An attende is defined by both an __email address__ or a __name__.
@@ -75,11 +77,9 @@ In order to use names, the file `emails.json` should contain the matches between
 	"william": "william@example.com"
 }	
 ```
-Examples:
+__Note__: For more than one attendee, the default separator is `space`
+
+__Examples__:
 - john
 - john@example.com micheal@example.com
 - john micheal otherguy@example.com
-
-__Note__: For more than one attendee, the default separator is `space`
-	
-
