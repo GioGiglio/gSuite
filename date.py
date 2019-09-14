@@ -12,22 +12,22 @@ class Date(datetime):
     '''Utility Date class'''
     pass
 
-    weekdays = {0: 'Mon', 1: 'Tue', 2: 'Wed', 3: 'Thu', 4: 'Fri', 5: 'Sat', 6: 'Sun'}
+    weekdays = dict(Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6)
 
-    def __str__(self) -> str:
+    def __str__(self):
         if self.hasTime:
             return self.strftime('%d/%m/%Y %H:%M')
         else:
             return self.strftime('%d/%m/%Y')
 
-    def dateEquals(self,d) -> bool:
+    def dateEquals(self,d):
         return self.date() == d.date()
 
-    def dateStr(self) -> str:
-        return self.date().strftime('%d/%m/%Y')
+    def dateStr(self):
+        return self.strftime('%d/%m/%Y')
 
-    def timeStr(self) -> str:
-        return self.time().strftime('%H:%M')
+    def timeStr(self):
+        return self.strftime('%H:%M')
 
     @staticmethod
     def new(year,month,day,hour,minute,hasTime):
@@ -38,15 +38,6 @@ class Date(datetime):
     @staticmethod
     def fromDatetime(dt, hasTime):
         return Date.new(dt.year, dt.month, dt.day, dt.hour, dt.minute,hasTime)
-
-    @staticmethod
-    def weekDayNumber(day):
-        day = day.capitalize()
-        for k,v in Date.weekdays.items():
-            if v == day:
-                return k
-
-        return None
 
     @staticmethod
     def dateNextWeekday(dayNumber):
@@ -65,7 +56,7 @@ class Date(datetime):
         return nextDate
 
     @staticmethod
-    def fromUserInput(s: str):
+    def fromUserInput(s):
         # Tries to parse a date object from a user input for a date
         # possible inputs: today 11 30 - tomorrow 11 30 - 31 12 2019 11 30
         
@@ -87,8 +78,9 @@ class Date(datetime):
         elif s.startswith('next'):
             timeStartIndex = 2
             day = dateTokens[1]
-            dayNumber = Date.weekDayNumber(day)
-            if dayNumber is None:
+            try:
+                dayNumber = Date.weekdays[day.capitalize()]
+            except:
                 raise Exception('Invalid week day: ' + day)
                 
             nextDate = Date.dateNextWeekday(dayNumber)

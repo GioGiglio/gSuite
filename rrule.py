@@ -3,7 +3,7 @@ from datetime import datetime
 
 def toStr(s):
     # returns a human readable representation of the recurrence
-    # "every 2 weeks on FR for 20 times"
+    # "every 2 weeks on Fri for 20 times"
     tokens = s.split(';')
     count = None
     interval = None
@@ -11,7 +11,7 @@ def toStr(s):
     byday = None
     out = []
 
-    weekdays = {'MO':'Mon', 'TU':'Tue', 'WE':'Wed', 'TH':'Thu', 'FR':'Fri', 'SA':'Sat', 'SU':'Sun'}
+    weekdays = dict(MO='Mon', TU='Tue', WE='Wed', TH='Thu', FR='Fri', SA='Sat', SU='Sun')
 
     for t in tokens:
         k,v = t.split('=')
@@ -57,7 +57,7 @@ def toStr(s):
 
 
 def _parseTokens(tokens):
-    # return order freq, interval, byday, count, until
+    # returns in the following order: freq, interval, byday, count, until
     freq = None
     interval = None
     byday = None
@@ -71,8 +71,6 @@ def _parseTokens(tokens):
     i += 1
     freq = tokens[i]
     i += 1
-
-    #print('i: {}, l: {}, tokens: {}'.format(i,l,tokens))
 
     if i > l:
         return (freq,interval,byday,count,until)
@@ -98,7 +96,7 @@ def fromUserInput(s):
     # parses the user input for a recurrence into a string representing the recurrence itself
 
     tokens = s.split(' ')
-    freqs = {'days': 'DAILY', 'weeks': 'WEEKLY', 'months': 'MONTHLY', 'years': 'YEARLY'}
+    freqs = dict(days='DAILY', weeks='WEEKLY', months='MONTHLY', years='YEARLY')
     out = []
 
     if len(tokens) < 3:

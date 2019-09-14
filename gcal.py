@@ -85,7 +85,7 @@ def showAgenda(calendarId):
         calendarId = 'primary'
 
     events = reqs.agenda(calendarId)
-    
+
     for e in events:
         print(Event.parse(e))
 

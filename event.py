@@ -42,10 +42,10 @@ class Event:
             out += '\n'
 
         if self.recurrence:
-            out += '[' + rrule.toStr(self.recurrence) + ']'
+            out += '[' + rrule.toStr(self.recurrence) + ']\n'
 
-        if self.attendees:
-            out += '[with {}]'.format(', '.join(self.attendees))
+        elif self.attendees:
+            out += '[with: {}] \n'.format(', '.join(self.attendees))
         
         return out
 
