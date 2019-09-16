@@ -22,12 +22,12 @@ With: john micheal william
 ```
 
 ### Usage
-- `-n` , `--new-event` to create a new event.
-- `-q` , `--quick` to create a new quick event.
-- `-c` , `--calendar` to select the calendar (default is primary).
-- `-l` , `--list` to list the events of the selected calendar.
-- `-a` , `--agenda` to show  the agenda for the selected calendar.
-- `-h` , `--help` to print an help message.
+- `-n  --new-event` to create a new event.
+- `-q  --quick DATE , SUMMARY` to create a new quick event.
+- `-c  --calendar CALENDAR_NAME` to select the calendar (default is `main`).
+- `-l  --list` to list the events of the selected calendar.
+- `-a  --agenda day|3days|week|next week` to show  the agenda (default is `week`).
+- `-h  --help` to print an help message.
 
 ### Calendars
 Multiple calendars can be associated to an account in addition to the main calendar whose id is  `primary`. <br>
