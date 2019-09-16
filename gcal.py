@@ -2,6 +2,7 @@ from event import Event
 import argparse
 import utils
 import reqs
+import printer
 from date import Date
 
 def main():
@@ -86,8 +87,11 @@ def showAgenda(calendarId):
 
     events = reqs.agenda(calendarId)
 
-    for e in events:
-        print(Event.parse(e))
+    events = list(map(lambda x: Event.parse(x), events))
+    printer.printAgenda(events,7)
+
+    #for e in events:
+    #    print(Event.parse(e))
 
 def readCalendarId(calendars):
     print('Calendar (', end='')

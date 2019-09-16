@@ -20,6 +20,11 @@ class Date(datetime):
         else:
             return self.strftime('%d/%m/%Y')
 
+    def __add__(self,other):
+        result = super().__add__(other)
+        return Date.fromDatetime(result,self.hasTime)
+
+
     def dateEquals(self,d):
         return self.date() == d.date()
 

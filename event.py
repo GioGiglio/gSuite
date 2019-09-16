@@ -15,13 +15,17 @@ class Event:
         self.attendees = attendees
         
         # event type
-        if not self.start.hasTime:
+
+        if (self.end - self.start).days == 1 and not self.start.hasTime:
             self.type = 'allday'
         elif self.start.dateEquals(self.end):
             self.type = 'singleday'
         else:
-            self.type = 'multiday'
-
+            if self.start.hasTime:
+                self.type = 'multiday'
+            else:
+                self.type = 'multiallday'
+        
     
     def __str__(self):
         out = self.summary + ' '
@@ -33,7 +37,7 @@ class Event:
             out += self.start.dateStr() + ' * ' + self.start.timeStr() + "-" + self.end.timeStr()
         elif self.type == 'allday':
             out += self.start.dateStr()
-        else:   # multidate
+        else:   # multiday
             out += str(self.start) + " - " + str(self.end)
         
         if self.location:
@@ -49,6 +53,21 @@ class Event:
             out += '[with: {}] \n'.format(', '.join(names))
         
         return out
+
+    def str2(self):
+        out = '\t'
+        if self.type == 'singleday':
+            out += '{} - {}\t'.format(self.start.timeStr(), self.end.timeStr())
+        elif self.type == 'allday':
+            out += 'All day\t\t'
+        elif self.type == 'multiday':
+            out += 'From {}\t'.format(self.start.timeStr())
+        elif self.type == 'multiallday':
+            out += '{} - {}\t'.format(self.start, self.end)
+        
+        out += self.summary
+        return out
+
 
     def toDict(self):
         out = vars(self)

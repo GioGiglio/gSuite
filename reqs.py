@@ -1,18 +1,17 @@
 import datetime
 import os.path
 import pickle
+import json
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 
-SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+SCOPES = ['https://www.googleapis.com/auth/calendar.events','https://www.googleapis.com/auth/calendar.readonly']
 service = None
-creds = None
 
 def init():
     global service
-    global creds
     creds = loadCreds()
     service = build('calendar', 'v3', credentials=creds)
 
@@ -20,6 +19,7 @@ def loadCreds():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
+    creds = None
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
@@ -34,7 +34,6 @@ def loadCreds():
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
-    
     return creds
     
 
@@ -58,4 +57,25 @@ def agenda(calendarId, timeMin = 0, maxResults = 10):
                                           maxResults=maxResults, singleEvents=True,
                                           orderBy='startTime').execute()
     return events_result.get('items', [])
-    
+
+def getCalendars():
+    calendars = {}
+    page_token = None
+    while True:
+        calendar_list = service.calendarList().list(pageToken=page_token).execute()
+        for entry in calendar_list['items']:
+            name, id = entry['summary'], entry['id']
+            if name == id:
+                name, id = 'main', 'primary'
+
+            calendars[name] = id
+
+        page_token = calendar_list.get('nextPageToken')
+        if not page_token:
+            break
+    saveCalendars(calendars)
+
+def saveCalendars(calendars):
+    # Writes calendars to the file calendars.json
+    with open('calendars.json','w', encoding='utf-8') as f:
+        f.write(json.dumps(calendars, indent=4, ensure_ascii=False))

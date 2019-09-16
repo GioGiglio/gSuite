@@ -1,59 +1,15 @@
-import rrule
-import json
+from event import Event
+from date import Date
+import copy
+from datetime import timedelta
 
-def test_rrule():
-    r = rrule.fromUserInput('20 days')
-    print(r)
-    r = rrule.toStr(r)
-    print(r)
-    r = rrule.fromUserInput('1 weeks on mon,thu')
-    print(r)
-    r = rrule.toStr(r)
-    print(r)
-    r = rrule.fromUserInput('3 days for 15 times')
-    print(r)
-    r = rrule.toStr(r)
-    print(r)
-    r = rrule.fromUserInput('2 weeks on fri until 31 12 2019')
-    print(r)
-    r = rrule.toStr(r)
-    print(r)
+e1 = Event('summary','description',Date.new(2019,9,15,0,0,False),Date.new(2019,9,15,0,0,False),None,None,None)
+e2 = copy.copy(e1)
 
+print(e1 == e2)     # True
+print(e1 is e1)     # False
 
-def test():
-    with(open('emails.json')) as f:
-        attendees = json.load(f)
+e2.start += timedelta(days=10)
 
-    s = input('with: ')
-    names = s.split(' ')
-
-    #emails = list(map(lambda x: x if isEmail(x) else attendees[x] , names))
-    emails = list(map(toEmail, names))
-    print(emails)
-
-    print(attendees['friends'])
-    #'attendees': [
-    #    {'email': 'lpage@example.com'},
-    #    {'email': 'sbrin@example.com'},
-    #]
-
-
-def toEmail(name):
-    with(open('emails.json')) as f:
-        emails = json.load(f)
-
-    if isEmail(name):
-        return name
-    
-    email = emails[name]
-
-    if type(email) == list:
-        return email
-    else:
-        return email
-
-
-def isEmail(s):
-    return '@' in s
-
-test()
+print(e1)
+print(e2)
