@@ -3,36 +3,47 @@ from event import Event
 from datetime import timedelta, date
 
 
-def printAgenda(events,days):
-    # start / end should be for the current week
-    #maxDate = max(map(lambda x: x.end.date(), events))
-
-    lastDate = None
-    startDate = date.today()
-    endDate = startDate + timedelta(days=days)
-    agenda = {}
-
+def printAgenda(events, startDate, days):
+    
     for i in range(days):
         d = startDate + timedelta(days=i)
-        occurringEvents = list(filter(lambda x: x.start.date() <= d <= x.end.date(), events))
+        
+        # startingEvents are the events having starting date equal to d
+        startingEvents = list(filter(lambda x: x.start.date() == d, events))
+
+        # occurringEvents are the events that last more than one day, not starting on d
+        # but finishing on d or after 
+        # [multi]allday events have ending dates for the day after their actual ending day
+        # so ignore those events if the current date equals their 'uncorrect' ending date
+        occurringEvents = list(filter(lambda x: x.start.date() < d <= x.end.date() 
+                                                and not ('allday' in x.type and x.end.date() == d), events))
+
+        # print date label
+        print(d.strftime('%d %b, %a'))
+
+        # print occurring events
         if len(occurringEvents) > 0:
-            agenda[d] = occurringEvents
+            print('\t----Events from the past days----')
 
-    print(agenda)
-    print(list(map(lambda x: list(map(lambda y: str(y), x)),agenda.values())))
-    return
+            if d.day == 19:
+                print(occurringEvents[0].str2())
 
-    for e in events:
-        if lastDate and e.start.date() == lastDate:
-            # same date
-            print(e.str2())
+            for e2 in occurringEvents:
+                if d < e2.end.date():
+                    # at the current day, the event has not finished
+                    print(e2.str2('mid'))
+                elif d == e2.end.date():
+                    # the current date d is the last day of the event
+                    print(e2.str2('end'))
             
-        else:
-            # new date
-            print('')       # print new line
-            lastDate = e.start.date()
-            print(e.start.strftime('%d %b, %a'))
-            print(e.str2())
+            if len(startingEvents) > 0:
+                print('\t----Events starting ' + d.strftime('%d/%m') + '----')
+
+        # print starting events
+        for e1 in startingEvents:
+            print(e1.str2())
+
+
 
 
 

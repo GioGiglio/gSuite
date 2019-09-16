@@ -4,6 +4,7 @@ import utils
 import reqs
 import printer
 from date import Date
+from datetime import date
 
 def main():
     reqs.init()
@@ -86,9 +87,15 @@ def showAgenda(calendarId):
         calendarId = 'primary'
 
     events = reqs.agenda(calendarId)
-
     events = list(map(lambda x: Event.parse(x), events))
-    printer.printAgenda(events,7)
+
+    today = date.today()
+    # TODO dateNextWeekday(7) is invalid as weekdays range from 0 to 6
+    # find out what's wrong in the method
+    nextSunday = Date.dateNextWeekday(7)
+    days = (nextSunday - today).days
+
+    printer.printAgenda(events,today,days)
 
     #for e in events:
     #    print(Event.parse(e))
