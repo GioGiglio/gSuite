@@ -54,26 +54,6 @@ class Event:
         
         return out
 
-    def str2(self, when='start'):
-        out = '\t'
-        if self.type == 'singleday':
-            out += '{} - {}\t'.format(self.start.timeStr(), self.end.timeStr())
-        elif self.type == 'allday':
-            out += 'All day\t\t'
-        elif self.type == 'multiday':
-            if  when == 'start':
-                out += 'From {}\t'.format(self.start.timeStr())
-            elif when == 'mid':
-                out += 'All day\t\t'
-            elif when == 'end':
-                out += 'Until {}\t'.format(self.end.timeStr())
-        elif self.type == 'multiallday':
-            out += 'All day\t\t'
-        
-        out += self.summary
-        return out
-
-
     def toDict(self):
         out = vars(self)
         # set key according to type of date: all day or not
