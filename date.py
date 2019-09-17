@@ -93,7 +93,7 @@ class Date(datetime):
 
         elif not dateTokens[0].isdigit():
             # first token is neither a number nor a valid wildcard
-            raise Exception('Invalid token: ' + dateTokens[0])
+            raise Exception('Invalid date token: ' + dateTokens[0])
 
         else:
             # no wildcards

@@ -5,6 +5,7 @@ import reqs
 import printer
 from date import Date
 from datetime import date
+from sys import stderr
 
 def main():
     reqs.init()
@@ -12,22 +13,30 @@ def main():
 
     flags = parseArgs()
     calendars = utils.loadCalendars()
-    calendar = None
 
     if flags.calendar:
-        calendar = calendars[flags.calendar]
+        try:
+            calendarId = calendars[flags.calendar]
+        except KeyError:
+            print('Invalid calendar name:',flags.calendar, file=stderr)
+            return 1
 
     if flags.new_event:
-        newEvent(calendars, calendar)
+        newEvent(calendarId)
 
     elif flags.list:
-        listEvents(calendar)
+        listEvents(calendarId)
 
     elif flags.agenda:
-        showAgenda(calendar)
+        showAgenda(calendarId)
     
     elif flags.quick:
-        quickEvent(calendar, flags.quick)
+        if len(flags.quick) < 2:
+            print('Invalid format for a quick event', file=stderr)
+            print('Usage: --quick DATE[TIME] , SUMMARY', file=stderr)
+            return 1
+
+        quickEvent(calendarId, ' '.join(flags.quick))
 
     else:
         # no main flag provided
@@ -36,56 +45,42 @@ def main():
 
 
 def parseArgs():
-    parser = argparse.ArgumentParser(prog='gcal',
-        description='Google Calendar CL client')
+    parser = argparse.ArgumentParser(prog='gcal',description='Google Calendar command line client')
     parser.add_argument('-n','--new-event', dest='new_event', action='store_true', help='create a new event')
-    parser.add_argument('-c','--calendar', dest='calendar', action='store', help='select the calendar (default is primary calendar)')
+    parser.add_argument('-c','--calendar', dest='calendar', action='store', default='main', help='select the calendar (default is primary calendar)')
     parser.add_argument('-l','--list', dest='list', action='store_true', help='list events for the selected calendar')
     parser.add_argument('-a','--agenda', dest='agenda', action='store_true', help='show agenda for the selected calendar')
     parser.add_argument('-q','--quick',dest='quick',action='store', nargs='*', help='create an event quickly')
     return parser.parse_args()
 
 
-def newEvent(calendars, calendarId):
+def newEvent(calendarId):
     event = Event.readEvent()
 
-    if not calendarId:
-        calendarId = 'primary'
-    
     # insert event into calendar
     reqs.insertEvent(event.toDict(),calendarId)
 
-def quickEvent(calendarId, tokens):
-    # format date time event_summary
-    if not calendarId:
-        calendarId = 'primary'
-
-    if len(tokens) < 2:
-        raise Exception('invalid format')
-
-    s = ' '.join(tokens)
+def quickEvent(calendarId: str, qe: str):
     
-    date, summary = s.split(',', maxsplit=1)
+    date, summary = qe.split(',', maxsplit=1)
     date.strip()
     summary.strip()
-    date = Date.fromUserInput(date)
+
+    try:
+        date = Date.fromUserInput(date)
+    except Exception as e:
+        print(e, file=stderr)
+        return 1
 
     e = Event.quick(summary,date)
     reqs.insertEvent(e.toDict(), calendarId)
 
 def listEvents(calendarId):
-
-    if not calendarId:
-        calendarId = 'primary'
-
     events = reqs.listEvents(calendarId)
     for e in events:
         print(Event.parse(e))
 
 def showAgenda(calendarId):
-    if not calendarId:
-        calendarId = 'primary'
-
     events = reqs.agenda(calendarId)
     events = list(map(lambda x: Event.parse(x), events))
 
@@ -99,14 +94,6 @@ def showAgenda(calendarId):
 
     #for e in events:
     #    print(Event.parse(e))
-
-def readCalendarId(calendars):
-    print('Calendar (', end='')
-    print(*calendars.keys(), sep=', ', end='')
-    print('): ', end='')
-    c = input()
-    return calendars[c]
-
 
 if __name__ == '__main__':
     main()
