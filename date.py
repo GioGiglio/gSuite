@@ -1,6 +1,8 @@
 from datetime import datetime, date, timedelta, tzinfo
+from sys import stderr
 
 class TZ(tzinfo):
+    '''Class for time zone info objects'''
     def utcoffset(self, dt): return timedelta(minutes=+120)
     
     @staticmethod
@@ -25,28 +27,45 @@ class Date(datetime):
         return Date.fromDatetime(result,self.hasTime)
 
 
-    def dateEquals(self,d):
-        return self.date() == d.date()
+    def dateEquals(self,other):
+        '''Checks if the date is equal to the *other* date.'''
+        try:
+            # other may be a datetime/Date instance
+            return self.date() == other.date()
+        except AttributeError:
+            # other is a datetime.date instance
+            return self.date() == other
 
     def dateStr(self):
+        '''Returns a string representation of the date
+        according to the format `dd/mm/YYYY`.
+        '''
         return self.strftime('%d/%m/%Y')
 
     def timeStr(self):
+        '''Returns a string representation of the time
+        according to the format `HH:MM`.'''
         return self.strftime('%H:%M')
 
     @staticmethod
     def new(year,month,day,hour,minute,hasTime):
+        '''Returns a new *Date* object.'''
         out = Date(year,month,day,hour,minute,tzinfo=TZ())
         out.hasTime = hasTime
         return out
 
     @staticmethod
     def fromDatetime(dt, hasTime):
+        '''Returns a new *Date* object created from the *dt* datetime object'''
         return Date.new(dt.year, dt.month, dt.day, dt.hour, dt.minute,hasTime)
 
     @staticmethod
     def dateNextWeekday(dayNumber):
-        # Returns the date corresponding to the next weekday from today
+        '''Returns the *Date* corresponding to the next weekday occurrence starting from the current day.
+        *dayNumber* identifies the weekday as an integer where Monday is 0 and Sunday is 6.'''
+
+        if not 0 <= dayNumber <= 6:
+            raise ValueError('Invalid day number: ' + str(dayNumber))
 
         today = date.today()
         currentDayNumber = today.weekday()
@@ -62,8 +81,9 @@ class Date(datetime):
 
     @staticmethod
     def fromUserInput(s):
-        # Tries to parse a date object from a user input for a date
-        # possible inputs: today 11 30 - tomorrow 11 30 - 31 12 2019 11 30
+        '''Tries to parse a *Date* object from a text input for a date.
+        
+        Read *How a Date is defined* for further information on date representations.'''
         
         s = s.strip()
         dateTokens = s.split(' ')
@@ -85,11 +105,12 @@ class Date(datetime):
             day = dateTokens[1]
             try:
                 dayNumber = Date.weekdays[day.capitalize()]
-            except:
+                nextDate = Date.dateNextWeekday(dayNumber)
+                year, month, day = nextDate.timetuple()[:3]
+            except KeyError:
                 raise Exception('Invalid week day: ' + day)
-                
-            nextDate = Date.dateNextWeekday(dayNumber)
-            year, month, day = nextDate.timetuple()[:3]
+            except ValueError as ve:
+                print(ve, file=stderr)
 
         elif not dateTokens[0].isdigit():
             # first token is neither a number nor a valid wildcard

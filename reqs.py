@@ -49,13 +49,13 @@ def listEvents(calendarId, timeMin = 0, maxResults = 10):
                                           ).execute()
     return events_result.get('items', [])
 
-def agenda(calendarId, timeMin = 0, maxResults = 10):
-    if timeMin == 0:
-        timeMin = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-
+def agenda(calendarId, timeMin, timeMax, maxResults = 100):
+    page_token = None
+    # TODO implement pagination based on page_token
     events_result = service.events().list(calendarId=calendarId, timeMin=timeMin,
-                                          maxResults=maxResults, singleEvents=True,
-                                          orderBy='startTime').execute()
+                                          timeMax=timeMax, maxResults=maxResults,
+                                          singleEvents=True, orderBy='startTime').execute()
+
     return events_result.get('items', [])
 
 def getCalendars():

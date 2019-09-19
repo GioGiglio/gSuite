@@ -4,19 +4,18 @@ from datetime import timedelta, date
 
 
 def printAgenda(events, startDate, days):
-    
-    for i in range(days):
+    for i in range(days+1):
         d = startDate + timedelta(days=i)
         
         # startingEvents are the events having starting date equal to d
-        startingEvents = list(filter(lambda x: x.start.date() == d, events))
+        startingEvents = list(filter(lambda x: x.start.dateEquals(d), events))
 
         # occurringEvents are the events that last more than one day, not starting on d
         # but finishing on d or after
         # [multi]allday events have ending dates for the day after their actual ending day
         # so ignore those events if the current date equals their 'uncorrect' ending date
         occurringEvents = list(filter(lambda x: x.start.date() < d <= x.end.date() 
-                                                and not ('allday' in x.type and x.end.date() == d), events))
+                                                and not ('allday' in x.type and x.end.dateEquals(d)), events))
 
         # print date label
         print(d.strftime('%d %b, %a'))
