@@ -24,20 +24,20 @@ def printAgenda(events, startDate, days):
         if len(occurringEvents) > 0:
             print('[From past days]')
 
-            for e2 in occurringEvents:
-                if d < e2.end.date():
-                    # event has not ended on d
-                    printAgendaEvent(e2,'mid')
-                elif d == e2.end.date():
+            for e in occurringEvents:
+                if d < e.end.date():
+                    # event does not end on d
+                    printAgendaEvent(e,'mid')
+                elif d == e.end.date():
                     # event ends on d
-                    printAgendaEvent(e2,'end')
+                    printAgendaEvent(e,'end')
             
             if len(startingEvents) > 0:
                 print('[New events]')
 
         # print starting events
-        for e1 in startingEvents:
-            printAgendaEvent(e1)
+        for e in startingEvents:
+            printAgendaEvent(e)
 
         # print newline
         print('') 

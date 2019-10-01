@@ -16,6 +16,10 @@ def init():
     service = build('calendar', 'v3', credentials=creds)
 
 def loadCreds():
+    '''Loads the user's credentials (if existing), otherwise
+    prompts the user to allow this program to access his google account, and
+    generates new credentials.'''
+    
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
@@ -38,9 +42,9 @@ def loadCreds():
     
 
 def insertEvent(event,calendarId):
-    event = service.events().insert(calendarId=calendarId, body=event).execute()
+    service.events().insert(calendarId=calendarId, body=event).execute()
 
-def listEvents(calendarId, timeMin = 0, maxResults = 10):
+def listEvents(calendarId, timeMin = 0, maxResults = 100):
     if timeMin == 0:
         timeMin = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
@@ -59,6 +63,7 @@ def agenda(calendarId, timeMin, timeMax, maxResults = 100):
     return events_result.get('items', [])
 
 def getCalendars():
+    '''Requests all the calendars and saves their names and ids in `calendars.json`'''
     calendars = {}
     page_token = None
     while True:
@@ -73,9 +78,9 @@ def getCalendars():
         page_token = calendar_list.get('nextPageToken')
         if not page_token:
             break
-    saveCalendars(calendars)
+    _saveCalendars(calendars)
 
-def saveCalendars(calendars):
-    # Writes calendars to the file calendars.json
+def _saveCalendars(calendars):
+    '''Writes *calendars* entries to the file `calendars.json`'''
     with open('calendars.json','w', encoding='utf-8') as f:
         f.write(json.dumps(calendars, indent=4, ensure_ascii=False))
