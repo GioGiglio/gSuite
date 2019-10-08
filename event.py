@@ -129,6 +129,11 @@ class Event:
             end = input('End: ')
             try:
                 end = Date.fromUserInput(end)
+
+                # check if end is before start
+                if end < start:
+                    raise ValueError('Invalid date: ending date must be after starting date')
+
             except ValueError as ve:
                 print(ve)
             else:

@@ -52,14 +52,13 @@ def parseArgs():
     parser.add_argument('-c','--calendar', dest='calendar', action='store', default='main', help='select the calendar (default is primary calendar)')
     parser.add_argument('-l','--list', dest='list', action='store_true', help='list events for the selected calendar')
     parser.add_argument('-a','--agenda', dest='agenda', action='store', const='week', nargs='?',
-                        choices=['day','3days','week','nextweek'], help='show agenda for the selected calendar')
+                        choices=['day','3days','week','nextweek'], help='show agenda for the specified time interval')
     parser.add_argument('-q','--quick',dest='quick',action='store', nargs='*', help='create an event quickly')
     return parser.parse_args()
 
 
 def newEvent(calendarId):
-    '''Reads an event and adds it to the calendar
-    identified by *calendarId*'''
+    '''Reads an event and adds it to the calendar identified by *calendarId*'''
 
     event = Event.readEvent()
 
