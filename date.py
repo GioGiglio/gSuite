@@ -108,18 +108,18 @@ class Date(datetime):
                 nextDate = Date.dateNextWeekday(dayNumber)
                 year, month, day = nextDate.timetuple()[:3]
             except KeyError:
-                raise Exception('Invalid week day: ' + day)
+                raise ValueError('Invalid week day: ' + day)
             except ValueError as ve:
                 print(ve, file=stderr)
 
         elif not dateTokens[0].isdigit():
             # first token is neither a number nor a valid wildcard
-            raise Exception('Invalid date token: ' + dateTokens[0])
+            raise ValueError('Invalid date token: ' + dateTokens[0])
 
         else:
             # no wildcards
             if len(dateTokens) < 3:
-                raise Exception('Not enough tokens for a date')
+                raise ValueError('Not enough tokens for a date')
 
             day,month,year = dateTokens[:3]
 
@@ -130,4 +130,4 @@ class Date(datetime):
         try:
             return Date.new(int(year), int(month), int(day), int(hour), int(minute), hasTime)
         except ValueError:
-            raise Exception('Invalid date')
+            raise ValueError('Invalid date')

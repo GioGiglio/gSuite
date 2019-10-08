@@ -119,8 +119,8 @@ class Event:
             start = input('Start: ')    # 15 03 2019[ 14 00]
             try:
                 start = Date.fromUserInput(start)
-            except Exception as e:
-                print(e)
+            except ValueError as ve:
+                print(ve)
             else:
                 correct = True
 
@@ -129,8 +129,8 @@ class Event:
             end = input('End: ')
             try:
                 end = Date.fromUserInput(end)
-            except Exception as e:
-                print(e)
+            except ValueError as ve:
+                print(ve)
             else:
                 correct = True
          
@@ -149,8 +149,8 @@ class Event:
                         recurrence = None
                     else:
                         recurrence = rrule.fromUserInput(recurrence)
-                except Exception as e:
-                    print(e)
+                except ValueError as ve:
+                    print(ve)
                 else:
                     correct =  True
                     

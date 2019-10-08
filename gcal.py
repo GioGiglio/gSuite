@@ -76,8 +76,8 @@ def quickEvent(calendarId: str, qe: str):
 
     try:
         date = Date.fromUserInput(date)
-    except Exception as e:
-        print(e, file=stderr)
+    except ValueError as ve:
+        print(ve, file=stderr)
         return 1
 
     e = Event.quick(summary,date)

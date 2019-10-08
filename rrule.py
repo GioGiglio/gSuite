@@ -100,18 +100,18 @@ def fromUserInput(s):
     out = []
 
     if len(tokens) < 3:
-        raise Exception('Invalid format')
+        raise ValueError('Invalid format')
 
     freq,interval,byday,count,until = _parseTokens(tokens)
 
     # freq
     if freq not in freqs:
-        raise Exception('Invalid frequency: ',freq)
+        raise ValueError('Invalid frequency: ' + freq)
     out.append('RRULE:FREQ=' + freqs[freq])
 
     # interval
     if interval is None:
-        raise Exception('Missing INTERVAL parameter')
+        raise ValueError('Missing INTERVAL parameter')
     out.append('INTERVAL=' + interval)
 
     # count
@@ -124,8 +124,8 @@ def fromUserInput(s):
             d = Date.fromUserInput(until)
             d = d.strftime('%Y%m%dT%H%M%SZ')
             out.append('UNTIL=' + d)
-        except Exception as e:
-            print(e)
+        except ValueError as ve:
+            print(ve)
 
     # byday
     if byday is not None:
